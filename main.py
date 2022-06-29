@@ -41,7 +41,8 @@ def SaveToOracle(df,epoch_id):
         import cx_Oracle
         table_name="RESULT_TABLE"
 
-        def sql_statement_maker(df: pd,table_name: str,list_of_keys: list):
+        def sql_statement_maker(df,table_name: str,list_of_keys: list):
+            import pandas as pd
 
             def string_manipulation(s, suffix):
                 if suffix and s.endswith(suffix):
@@ -82,7 +83,7 @@ def SaveToOracle(df,epoch_id):
             value_columns = [item for item in columns if item not in list_of_keys]
 
             for item in value_columns:
-                sql_statement+=" {item}:{item},".format(item=item)
+                sql_statement+=" {item}=:{item},".format(item=item)
 
 
             sql_statement=string_manipulation(sql_statement,',')
