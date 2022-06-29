@@ -35,7 +35,7 @@ df=(session
 
 def SaveToOracle(df,epoch_id):
     try:
-        print("***********Arman*************")
+        print("***********Start*************")
         pandasDF = df.toPandas()
         rows= pandasDF.to_dict(orient='records')
         print(rows)
