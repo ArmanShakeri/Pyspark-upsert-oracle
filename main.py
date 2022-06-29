@@ -38,27 +38,59 @@ def SaveToOracle(df,epoch_id):
         print("***********Start*************")
         pandasDF = df.toPandas()
         rows= pandasDF.to_dict(orient='records')
-        print(rows)
         import cx_Oracle
-        sql_statement="""
-                        MERGE INTO RESULT_TABLE USING DUAL
-                        ON (MSISDN=:MSISDN AND CDR_TYPE=:CDR_TYPE)                    
-                        WHEN NOT MATCHED THEN INSERT 
-                            (MSISDN,
-                            CDR_TYPE,
-                            DURATION
-                            
-                            ) 
-                        VALUES
-                            (:MSISDN,
-                            :CDR_TYPE,
-                            :DURATION
-                            ) 
-                        WHEN MATCHED THEN UPDATE SET
-                            DURATION=:DURATION
-                        """
+        table_name="RESULT_TABLE"
+
+        def sql_statement_maker(df,table_name: str,list_of_keys: list):
+            import pandas as pd
+
+            def string_manipulation(s, suffix):
+                if suffix and s.endswith(suffix):
+                    return s[:-len(suffix)]
+                return s
+
+            columns=list(df)
+            list_of_keys=list_of_keys    #input list of key columns for upsert
+
+            table_name=table_name
+            sql_statement="MERGE INTO {} USING DUAL ON (".format(table_name)
+
+            if len(list_of_keys)==1:
+                sql_statement+="{item}=:{item}".format(item=list_of_keys[0])
+            elif len(list_of_keys)==0:
+                print("please input key columns in list_of_keys varaible!")
+            else:
+                i=0
+                for item in list_of_keys:
+                    
+                    if i==0:
+                        sql_statement+="{item}=:{item}".format(item=item)
+                    else:
+                        sql_statement+=" AND {item}=:{item}".format(item=item)
+                    i+=1
+            sql_statement+=""")
+            WHEN NOT MATCHED THEN INSERT(
+            """
+            str_values=""
+            for item in columns:
+                sql_statement+="{},".format(item)
+                str_values+=":{},".format(item)
+
+            sql_statement=string_manipulation(sql_statement,',')
+            str_values=string_manipulation(str_values,',')
+            sql_statement+=") VALUES ("+str_values+") WHEN MATCHED THEN UPDATE SET"
+
+            value_columns = [item for item in columns if item not in list_of_keys]
+
+            for item in value_columns:
+                sql_statement+=" {item}=:{item},".format(item=item)
 
 
+            sql_statement=string_manipulation(sql_statement,',')
+
+            return sql_statement
+
+        sql_statement=sql_statement_maker(pandasDF,table_name,['MSISDN','CDR_TYPE'])
         host='172.17.135.46'
         port='1521'
         user_name='system'
