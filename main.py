@@ -5,8 +5,6 @@ from pyspark.sql.types import *
 from pyspark.conf import SparkConf
 _conf = SparkConf()
 
-_conf.set("spark.streaming.concurrentJobs","30")
-
 builder = SparkSession. \
     builder. \
     config(conf=_conf)
@@ -50,7 +48,7 @@ def SaveToOracle(df,epoch_id):
                 return s
 
             columns=list(df)
-            list_of_keys=list_of_keys    #input list of key columns for upsert
+            list_of_keys=list_of_keys
 
             table_name=table_name
             sql_statement="MERGE INTO {} USING DUAL ON (".format(table_name)
