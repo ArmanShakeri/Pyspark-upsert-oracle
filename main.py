@@ -5,6 +5,8 @@ from pyspark.sql.types import *
 from pyspark.conf import SparkConf
 _conf = SparkConf()
 
+import config
+
 builder = SparkSession. \
     builder. \
     config(conf=_conf)
@@ -17,7 +19,7 @@ fileschema=(StructType()
 
             )
 
-input_path='hdfs://172.17.135.31:9000/input/'
+input_path=config.input_path
 
 df=(session
   .readStream
@@ -37,7 +39,7 @@ def SaveToOracle(df,epoch_id):
         pandasDF = df.toPandas()
         rows= pandasDF.to_dict(orient='records')
         import cx_Oracle
-        table_name="RESULT_TABLE"
+        table_name=config.table_name
 
         def sql_statement_maker(df,table_name: str,list_of_keys: list):
             import pandas as pd
@@ -88,12 +90,13 @@ def SaveToOracle(df,epoch_id):
 
             return sql_statement
 
-        sql_statement=sql_statement_maker(pandasDF,table_name,['MSISDN','CDR_TYPE'])
-        host='172.17.135.46'
-        port='1521'
-        user_name='system'
-        password='hadoop'
-        sid='orcl'
+        list_of_keys=config.list_of_keys
+        sql_statement=sql_statement_maker(pandasDF,table_name,list_of_keys)
+        host=config.host
+        port=config.port
+        user_name=config.user_name
+        password=config.password
+        sid=config.sid
         dsn_tns = cx_Oracle.makedsn(host,port, sid=sid)
         conn = cx_Oracle.connect(user=user_name, password=password, dsn=dsn_tns)
         c = conn.cursor()
