@@ -1,3 +1,9 @@
+![GitHub last commit](https://img.shields.io/github/last-commit/ArmanShakeri/Pyspark-upsert-oracle)
+[![GitHub license](https://img.shields.io/github/license/ArmanShakeri/Pyspark-upsert-oracle)](https://github.com/ArmanShakeri/Pyspark-upsert-oracle/blob/master/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/ArmanShakeri/Pyspark-upsert-oracle)](https://github.com/ArmanShakeri/Pyspark-upsert-oracle/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/ArmanShakeri/Pyspark-upsert-oracle)](https://github.com/ArmanShakeri/Pyspark-upsert-oracle/network)
+[![GitHub issues](https://img.shields.io/github/issues/ArmanShakeri/Pyspark-upsert-oracle)](https://github.com/ArmanShakeri/Pyspark-upsert-oracle/issues)
+
 # About
 Pyspark sample code for upsert data to oracle table with jdbs connection
 
