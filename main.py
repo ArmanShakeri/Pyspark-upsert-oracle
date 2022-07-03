@@ -31,6 +31,24 @@ df=(session
   .load(input_path)
         )
   
+class oracle_db:
+    def __init__(self,host,port,sid,user_name,password):
+        self.host=host
+        self.port=port
+        self.sid=sid
+        self.user_name=user_name
+        self.password=password
+    
+    def execute(self,sql_statement,rows):
+        import cx_Oracle
+        dsn_tns = cx_Oracle.makedsn(self.host,self.port,self.sid)
+        conn = cx_Oracle.connect(user=self.user_name, password=self.password, dsn=dsn_tns)
+        c = conn.cursor()
+
+        c.executemany(sql_statement,rows)
+        conn.commit()
+        conn.close()
+
 
 def string_manipulation(s, suffix):
     if suffix and s.endswith(suffix):
@@ -89,7 +107,7 @@ def SaveToOracle(df,epoch_id):
         print("***********Start*************")
         pandasDF = df.toPandas()
         rows= pandasDF.to_dict(orient='records')
-        import cx_Oracle
+        
         table_name=config.table_name
         list_of_keys=config.list_of_keys
 
@@ -100,13 +118,9 @@ def SaveToOracle(df,epoch_id):
         user_name=config.user_name
         password=config.password
         sid=config.sid
-        dsn_tns = cx_Oracle.makedsn(host,port, sid=sid)
-        conn = cx_Oracle.connect(user=user_name, password=password, dsn=dsn_tns)
-        c = conn.cursor()
+        oracle_db=oracle_db(host,port,sid,user_name,password)
+        oracle_db.execute(sql_statement,rows)
 
-        c.executemany(sql_statement,rows)
-        conn.commit()
-        conn.close()
         pass
     except Exception as e:
         response = e.__str__()
