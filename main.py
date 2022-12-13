@@ -102,6 +102,22 @@ class sql_statement_maker:
 
         return sql_statement
 
+    def insert(self,df,table_name: str):
+        
+        columns=list(df)
+        sql_statement="INSERT INTO {} (".format(table_name)
+        str_values=""
+        for item in columns:
+            sql_statement+="{},".format(item)
+            str_values+=":{},".format(item)
+
+        sql_statement=string_manipulation(sql_statement,',')
+        str_values=string_manipulation(str_values,',')
+        sql_statement+=") VALUES ("+str_values+") "
+        sql_statement=string_manipulation(sql_statement,',')
+
+        return sql_statement
+
 
 def SaveToOracle(df,epoch_id):
     try:
